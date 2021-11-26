@@ -1,0 +1,15 @@
+version: '3.5'
+
+services:
+
+  mailer:
+    image: mailhog/mailhog
+    container_name: laravel-mailer-${APP_ENV:-dev}
+    ports:
+      - ${MAILHOG_PORT:-8025}:8025
+    networks:
+      - laravel
+
+  mariadb:
+    ports:
+      - 9033

@@ -5,9 +5,10 @@ services:
     container_name: laravel-busybox-${APP_ENV:-dev}
     image: busybox
     volumes:
-      - ./:/var/www/html
+      - ./:/var/www/html:rw
       - /var/lib/mysql
       - ./:/app:rw
+      - ./var/log/nginx:/var/log/nginx:rw
 
   php-fpm:
     container_name: laravel-php-fpm-${APP_ENV:-dev}
@@ -18,9 +19,6 @@ services:
       args:
         APP_ENV: ${APP_ENV:-dev}
         TZ: ${TZ:-Europe/Kiev}
-#    volumes:
-#      - ./:/var/www/html:rw
-#      - ~/.composer:/root/.composer/cache
     volumes_from:
       - busybox
     networks:
@@ -85,9 +83,6 @@ services:
       dockerfile: .docker/nginx/Dockerfile
       args:
         APP_ENV: ${APP_ENV:-dev}
-#    volumes:
-#      - ./:/var/www/html:rw
-#      - ./var/log/nginx:/var/log/nginx:rw
     volumes_from:
       - busybox
     ports:

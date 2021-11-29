@@ -88,13 +88,27 @@ class Post
 
     /**
      * @param string $slug
-     * @return Post
+     * @return Post|null
+     * @throws \Exception
      */
-    public static function findBySlug(string $slug): Post
+    public static function findBySlug(string $slug): ?Post
     {
         $posts = static::all();
         // dd($posts->firstWhere('slug', $slug));
         return $posts->firstWhere('slug', $slug);
+    }
+
+    /**
+     * @param $slug
+     * @return Post
+     * @throws \Exception
+     */
+    public static function findOrFail($slug): Post
+    {
+        if ($post = static::findBySlug($slug)) {
+            return $post;
+        }
+        throw new ModelNotFoundException;
     }
 
     /**

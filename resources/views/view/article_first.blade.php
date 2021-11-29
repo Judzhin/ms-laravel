@@ -19,7 +19,7 @@
 
                 <div class="mt-4">
                     <h1 class="text-3xl">
-                        <?= $post->title; ?>
+                        {{ $post->title }}
                     </h1>
 
                     <span class="mt-2 block text-gray-400 text-xs"> Published <time>1 day ago</time></span>

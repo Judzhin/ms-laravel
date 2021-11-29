@@ -98,7 +98,8 @@ Route::get('/posts/{id}-{slug}.html', function ($id, $slug) {
         // 'post' => file_get_contents($filename)
         // 'post' => $post
         // 'post' => Post::findByIdAndSlug($id, $slug)
-        'post' => Post::findBySlug($slug)
+        // 'post' => Post::findBySlug($slug)
+        'post' => Post::findOrFail($slug)
     ]);
 })->whereNumber('id')->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*');
 //->where([

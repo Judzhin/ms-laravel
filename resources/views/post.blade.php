@@ -73,12 +73,11 @@
                 </div>
 
                 <h1 class="font-bold text-3xl lg:text-4xl mb-10">
-                    This is a big title and it will look great on two or even three
-                    lines. Wooohoo!
+                    <?= $post->title; ?>
                 </h1>
 
                 <div class="space-y-4 lg:text-lg leading-loose">
-                    <?= $post; ?>
+                    <?= $post->body; ?>
                 </div>
             </div>
         </article>

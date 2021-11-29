@@ -3,7 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use Spatie\YamlFrontMatter\Document;
+use Spatie\YamlFrontMatter\YamlFrontMatter;
 use Symfony\Component\Finder\SplFileInfo;
 
 /**
@@ -13,15 +16,85 @@ use Symfony\Component\Finder\SplFileInfo;
 class Post
 {
     /**
-     * @return void[]
+     * Post constructor.
+     * @param string $title
+     * @param string $slug
+     * @param string $excerpt
+     * @param string $date
+     * @param string $body
      */
-    public static function all()
+    public function __construct(
+        public string $title,
+        public string $slug,
+        public string $excerpt,
+        public string $date,
+        public string $body
+    )
     {
-        //return array_map(function (SplFileInfo $file) {
-        //    return $file->getContents();
-        //}, File::files(resource_path("posts/")));
+    }
 
-        return array_map(fn (SplFileInfo $file) => $file->getContents(), File::files(resource_path("posts/")));
+    /**
+     * @param Document $document
+     * @return static
+     */
+    public static function parseFromDocument(Document $document): self
+    {
+        return new self(
+            $document->title,
+            $document->slug,
+            $document->excerpt,
+            $document->date,
+            $document->body(),
+        );
+    }
+
+    /**
+     * @return Collection
+     * @throws \Exception
+     */
+    public static function all(): Collection
+    {
+        return cache()->rememberForever('posts.all', function () {
+            $files = File::files(resource_path("posts"));
+            return collect($files)
+                ->map(fn(SplFileInfo $file) => YamlFrontMatter::parseFile($file))
+                ->map(fn(Document $document) => Post::parseFromDocument($document))
+                ->sortByDesc('date');
+        });
+
+        // =======================================================================
+        // $files = File::files(resource_path("posts"));
+        //
+        // return collect($files)
+        //     ->map(fn(SplFileInfo $file) => YamlFrontMatter::parseFile($file))
+        //     ->map(fn(Document $document) => Post::parseFromDocument($document))
+        //     ->sortByDesc('date');
+
+        ////return array_map(function (SplFileInfo $file) {
+        ////    return $file->getContents();
+        ////}, File::files(resource_path("posts/")));
+        //
+        //$files = File::files(resource_path("posts/"));
+        //
+        //foreach ($files as $k => $file) {
+        //    // $files[$k] = YamlFrontMatter::parseFile($file);
+        //    $files[$k] = YamlFrontMatter::parseFile($file);
+        //}
+        //
+        //// ddd($files);
+        //
+        //return array_map(fn(SplFileInfo $file) => $file->getContents(), $files);
+    }
+
+    /**
+     * @param string $slug
+     * @return Post
+     */
+    public static function findBySlug(string $slug): Post
+    {
+        $posts = static::all();
+        // dd($posts->firstWhere('slug', $slug));
+        return $posts->firstWhere('slug', $slug);
     }
 
     /**

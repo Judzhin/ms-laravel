@@ -78,7 +78,12 @@ pull: ## Pulling image from hub
 	$(info Make: Pulling "$(TAG)" tagged image.)
 	@docker pull $(IMAGE):$(TAG)
 
+artisan: ## Artisan Console
+	$(info Make: Show Artisan Access Command)
+	@docker-compose run --rm artisan
+
 purge: ## Purge cache and logs
+	$(info Make: Purge cache and logs)
 	rm -rf var/cache/* var/log/*
 	@docker-compose run --rm artisan migrate:refresh --seed -v
     @docker-compose run --rm artisan cache:clear
@@ -86,6 +91,7 @@ purge: ## Purge cache and logs
     @docker-compose run --rm artisan config:clear
 
 clean: ## Remove unused data without prompt for confirmation
+	$(info Make: Remove unused data without prompt for confirmation)
 	@docker system prune --volumes --force
 
 login: ## Login to Docker Hub.
@@ -94,9 +100,13 @@ login: ## Login to Docker Hub.
 
 ## Custom Commands
 cli: ## Run CLI
-	$(info Make: Run CLI)
+	$(info Make: Run PHP-FPM CLI)
 	@docker-compose exec php-fpm bash
 
-watch: ## Run CLI
+watch: ## Run Watch
 	$(info Make: Run Watch)
 	@docker-compose run --rm node npx mix watch
+
+tinker: ## Run CLI
+	$(info Make: Open Tinker)
+	@docker-compose run --rm artisan tinker
